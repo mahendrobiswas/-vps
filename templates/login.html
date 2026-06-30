@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.site_title }} - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: {{ config.colors[config.theme].primary }};
+            --secondary: {{ config.colors[config.theme].secondary }};
+            --accent: {{ config.colors[config.theme].accent }};
+            --bg: {{ config.colors[config.theme].background }};
+            --card-bg: {{ config.colors[config.theme].card_bg }};
+            --text: {{ config.colors[config.theme].text }};
+            --danger: {{ config.colors[config.theme].danger }};
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 45%),
+                radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--secondary) 14%, transparent), transparent 45%),
+                var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(color-mix(in srgb, var(--primary) 6%, transparent) 1px, transparent 1px),
+                linear-gradient(90deg, color-mix(in srgb, var(--primary) 6%, transparent) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .login-container {
+            background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+            backdrop-filter: blur(18px);
+            border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+            border-radius: 20px;
+            padding: 44px 36px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+            box-shadow:
+                0 25px 60px -15px rgba(0,0,0,0.5),
+                0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent);
+            animation: rise 0.5s ease-out;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--primary) 60%, transparent);
+        }
+
+        .badge-icon i {
+            font-size: 28px;
+            color: var(--bg);
+        }
+
+        .login-title {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .login-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.15em;
+            color: var(--secondary);
+            opacity: 0.8;
+        }
+
+        .field-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: color-mix(in srgb, var(--bg) 70%, black 30%);
+            border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+            color: var(--text);
+            padding: 14px 46px 14px 16px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: all 0.25s;
+        }
+
+        .login-input::placeholder {
+            color: var(--text);
+            opacity: 0.35;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.45;
+            transition: all 0.2s;
+        }
+
+        .toggle-password:hover {
+            opacity: 0.9;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: var(--bg);
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--primary) 70%, transparent);
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px -10px color-mix(in srgb, var(--primary) 80%, transparent);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: var(--danger);
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: color-mix(in srgb, var(--danger) 10%, transparent);
+            display: flex;
+            align-items: center;
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            opacity: 0.55;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            animation: blink 1.6s infinite;
+        }
+
+        @keyframes blink {
+            0%, 60% { opacity: 1; }
+            80% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .footer-note {
+            font-size: 11px;
+            opacity: 0.4;
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            opacity: 0.6;
+        }
+
+        .theme-indicator {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.1em;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+            opacity: 0.5;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="theme-indicator">{{ config.theme|upper }} MODE</div>
+
+    <div class="login-container">
+        <div class="text-center mb-2">
+            <div class="badge-icon">
+                <i class="fas fa-server"></i>
+            </div>
+            <h1 class="text-2xl login-title">{{ config.site_header }}</h1>
+            <p class="text-[11px] mt-2 login-subtitle">CONTROL PANEL ACCESS</p>
+        </div>
+
+        <div class="status-line mt-6">
+            <span class="status-dot"></span>
+            <span>Awaiting credentials...</span>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/login" id="loginForm">
+            <label class="field-label" for="password">Access Password</label>
+            <div class="password-container">
+                <input type="password"
+                       name="password"
+                       id="password"
+                       class="login-input"
+                       placeholder="••••••••••••"
+                       required
+                       autofocus>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword()" id="toggleIcon"></i>
+            </div>
+
+            <button type="submit" class="login-button">
+                <i class="fas fa-arrow-right-to-bracket mr-2"></i>
+                Sign In
+            </button>
+        </form>
+
+        <div class="mt-8 footer-note">
+            <p><i class="fas fa-shield-halved mr-1"></i> Unauthorized access is prohibited</p>
+            <p class="mt-2 footer-brand">MAHEN SECURE SYSTEMS</p>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>
